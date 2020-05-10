@@ -34,6 +34,29 @@ docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --rm -t zhouu/c
 ```
 
 
+### UnblockNeteaseMusic
+
+##### 使用方式
+
+1. 生成自己的证书
+
+   ```shell
+   sudo mkdir /etc/unblockmusic
+   sudo ./createCertificate.sh
+   ```
+
+2. 运行程序
+
+   ```shell
+   docker run -d --name music -p 8080:80 -p 8443:443 -v /etc/unblockmusic/:/etc/unblockmusic/ zhouu/unblockmusic:0.2.0-0c1c2f7 -e -m 0 -c /etc/unblockmusic/certs/server.crt -k /etc/unblockmusic/certs/server.key
+   ```
+
+##### 镜像构建
+```shell
+docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --rm -t zhouu/unblockmusic:0.2.0-0c1c2f7 -f Dockerfile .
+```
+
+
 ### 感谢
 
 [aliyun-ddns-cli](https://github.com/honwen/aliyun-ddns-cli)
@@ -47,3 +70,5 @@ docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --rm -t zhouu/c
 [redisc](https://github.com/miekg/redis)
 
 [dnsredir](https://github.com/leiless/dnsredir)
+
+[UnblockNeteaseMusic](https://github.com/cnsilvan/UnblockNeteaseMusic)
