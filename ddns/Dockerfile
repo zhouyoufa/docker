@@ -16,13 +16,13 @@ RUN apt-get update \
             sed -n '{/sha/p; /date/p;}' | sed 's/.* \"//g' | cut -c1-10 | tr '[:lower:]' '[:upper:]' | sed 'N;s/\n/@/g' | head -1)" \
         github.com/chenhw2/aliyun-ddns-cli
 
-FROM scratch
+FROM alpine
 
-ENV ACCESS_ID      = ""
-ENV ACCESS_SECRET  = "" 
-ENV IP_API         = "http://myip.ipip.net"
+ENV ACCESS_ID      ""
+ENV ACCESS_SECRET  "" 
+ENV IP_API         "http://myip.ipip.net"
 
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 COPY --from=builder /go/bin/aliyun-ddns-cli /usr/bin/ddns
 
-ENTRYPOINT ["/usr/bin/ddns", "--id", "${ACCESS_ID}", "--secret", "${ACCESS_SECRET}", "--api", "${IP_API}"]
+ENTRYPOINT [ "sh", "-c", "/usr/bin/ddns --id ${ACCESS_ID} --secret ${ACCESS_SECRET} --api ${IP_API} $0 $@"]
