@@ -57,6 +57,47 @@ docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --rm -t zhouu/u
 ```
 
 
+### Certbot
+
+##### 使用方式
+
+```shell
+CERTBOT_VERSION=1.4.0; docker run -d --name certbot -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" zhouu/certbot:${CERTBOT_VERSION} certonly --agree-tos --non-interactive -d example.com
+```
+
+##### 镜像构建
+
+```shell
+CERTBOT_VERSION=1.4.0; docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --build-arg CERTBOT_VERSION=${CERTBOT_VERSION} --push --rm -t zhouu/certbot:${CERTBOT_VERSION} -f Dockerfile .
+```
+
+
+### Certbot using aliyun dns plugin
+
+##### 使用方式
+
+1. Credentials File
+
+   ```shell
+   certbot_dns_aliyun:dns_aliyun_access_key = 12345678
+   certbot_dns_aliyun:dns_aliyun_access_key_secret = 1234567890abcdef1234567890abcdef
+
+   chmod 600 /path/to/credentials.ini
+   ```
+
+2. 运行程序
+
+   ```shell
+   CERTBOT_VERSION=1.4.0; docker run -d --name certbot -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" -v "/var/log/letsencrypt:/var/log/letsencrypt" zhouu/certbot-dns-aliyun:${CERTBOT_VERSION} certonly --agree-tos --non-interactive -a certbot-dns-aliyun:dns-aliyun --certbot-dns-aliyun:dns-aliyun-credentials /etc/letsencrypt/secrets/aliyun.ini -d example.com
+   ```
+
+##### 镜像构建
+
+```shell
+CERTBOT_VERSION=1.4.0; docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --build-arg CERTBOT_VERSION=${CERTBOT_VERSION} --push --rm -t zhouu/certbot-dns-aliyun:${CERTBOT_VERSION} -f Dockerfile .
+```
+
+
 ### 感谢
 
 [aliyun-ddns-cli](https://github.com/honwen/aliyun-ddns-cli)
