@@ -57,6 +57,20 @@ docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --rm -t zhouu/u
 ```
 
 
+### UnblockNeteaseMusic by NodeJS
+
+##### 使用方式
+
+```shell
+docker run -d --name music-node zhouu/unblockmusic-node -s -e https://music.163.com -p 8080:8081
+```
+
+##### 镜像构建
+```shell
+docker buildx build --platform linux/amd64,linux/arm,linux/arm64 --rm -t zhouu/unblockmusic-node -f Dockerfile .
+```
+
+
 ### Certbot
 
 ##### 使用方式
@@ -113,3 +127,5 @@ CERTBOT_VERSION=1.4.0; docker buildx build --platform linux/amd64,linux/arm,linu
 [dnsredir](https://github.com/leiless/dnsredir)
 
 [UnblockNeteaseMusic](https://github.com/cnsilvan/UnblockNeteaseMusic)
+
+[UnblockNeteaseMusic-NodeJS](https://github.com/nondanee/UnblockNeteaseMusic)
