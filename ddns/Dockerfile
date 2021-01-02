@@ -1,28 +1,22 @@
 FROM golang:buster AS builder
 
-LABEL summary="Aliyun DDNS for ARM"
-LABEL description="Aliyun DDNS for ARM devices"
-LABEL maintainer="Zhou You <hi@zhouyou.info>"
+RUN apt-get update && apt-get -uy upgrade
+RUN apt-get -y install ca-certificates && update-ca-certificates
 
-ENV CGO_ENABLED=0
-
-RUN apt-get update \ 
-    && apt-get -uy upgrade \
-    && apt-get -y install ca-certificates curl  \
-    && update-ca-certificates \
-    && set -ex \ 
-    && go get -u -v \
-        -ldflags "-X main.version=$(curl -sSL https://api.github.com/repos/chenhw2/aliyun-ddns-cli/commits/master | \
-            sed -n '{/sha/p; /date/p;}' | sed 's/.* \"//g' | cut -c1-10 | tr '[:lower:]' '[:upper:]' | sed 'N;s/\n/@/g' | head -1)" \
-        github.com/chenhw2/aliyun-ddns-cli
+WORKDIR $GOPATH/src/github.com/jeessy2/ddns-go
+RUN git clone https://github.com/jeessy2/ddns-go.git $GOPATH/src/github.com/jeessy2/ddns-go
+COPY build.sh .
+RUN mkdir bin && ./build.sh && cp ./bin/ddns-go /usr/bin/ddns
 
 FROM alpine
 
-ENV ACCESS_ID      ""
-ENV ACCESS_SECRET  "" 
-ENV IP_API         "http://myip.ipip.net"
+LABEL summary="DDNS for ARM"
+LABEL description="DDNS for ARM devices"
+LABEL maintainer="Zhou You <hi@zhouyou.info>"
 
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-COPY --from=builder /go/bin/aliyun-ddns-cli /usr/bin/ddns
+COPY --from=builder /usr/bin/ddns /usr/bin/ddns
 
-ENTRYPOINT [ "sh", "-c", "/usr/bin/ddns --id ${ACCESS_ID} --secret ${ACCESS_SECRET} --api ${IP_API} $0 $@"]
+EXPOSE 9876
+
+ENTRYPOINT ["/usr/bin/ddns"]
